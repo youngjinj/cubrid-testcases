@@ -55,14 +55,14 @@ trace
 
 Query Plan:
   SORT (order by)
-    TABLE SCAN (t?)
+    TABLE SCAN (dba.t?)
 
-  rewritten query: (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?)
+  rewritten query: (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?)
 
   SORT (group by)
     TABLE SCAN (__t?)
 
-  rewritten query: select [__t?].a, max([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d
+  rewritten query: select [__t?].a, max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d
 
 
 Trace Statistics:
@@ -71,7 +71,7 @@ Trace Statistics:
     GROUPBY (time: ?, hash: true, sort: true, page: ?, ioread: ?, rows: ?)
     SUBQUERY (uncorrelated)
       SELECT (time: ?, fetch: ?, ioread: ?)
-        SCAN (table: t?), (heap time: ?, fetch: ?, ioread: ?, readrows: ?, rows: ?)
+        SCAN (table: dba.t?), (heap time: ?, fetch: ?, ioread: ?, readrows: ?, rows: ?)
         ORDERBY (time: ?, sort: true, page: ?, ioread: ?)
      
 
@@ -90,10 +90,10 @@ trace
     {
       "SORT (order by)": {
         "TABLE SCAN": {
-          "table": "t?"
+          "table": "dba.t?"
         }
       },
-      "rewritten query": "(select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?)"
+      "rewritten query": "(select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?)"
     },
     {
       "SORT (group by)": {
@@ -101,7 +101,7 @@ trace
           "table": "__t?"
         }
       },
-      "rewritten query": "select avg([__t?].a), max([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d"
+      "rewritten query": "select avg([__t?].a), max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d"
     }
   ],
   "Trace Statistics": {
@@ -133,7 +133,7 @@ trace
           "fetch": ?,
           "ioread": ?,
           "SCAN": {
-            "access": "table (t?)",
+            "access": "table (dba.t?)",
             "heap": {
               "time": ?,
               "fetch": ?,
@@ -167,10 +167,10 @@ trace
     {
       "SORT (order by)": {
         "TABLE SCAN": {
-          "table": "t?"
+          "table": "dba.t?"
         }
       },
-      "rewritten query": "(select t?.a, t?.b, t?.d from t? t? order by ?, ?, ?)"
+      "rewritten query": "(select [dba.t?].a, [dba.t?].b, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?)"
     },
     {
       "SORT (group by)": {
@@ -178,7 +178,7 @@ trace
           "table": "__t?"
         }
       },
-      "rewritten query": "select [__t?].a, max([__t?].b) from (select t?.a, t?.b, t?.d from t? t? order by ?, ?, ?) [__t?] (a, b, d) group by [__t?].d"
+      "rewritten query": "select [__t?].a, max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?) [__t?] (a, b, d) group by [__t?].d"
     }
   ],
   "Trace Statistics": {
@@ -210,7 +210,7 @@ trace
           "fetch": ?,
           "ioread": ?,
           "SCAN": {
-            "access": "table (t?)",
+            "access": "table (dba.t?)",
             "heap": {
               "time": ?,
               "fetch": ?,
@@ -244,10 +244,10 @@ trace
     {
       "SORT (order by)": {
         "TABLE SCAN": {
-          "table": "t?"
+          "table": "dba.t?"
         }
       },
-      "rewritten query": "(select t?.a, t?.b, t?.d from t? t? order by ?, ?, ?)"
+      "rewritten query": "(select [dba.t?].a, [dba.t?].b, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?)"
     },
     {
       "SORT (group by)": {
@@ -255,7 +255,7 @@ trace
           "table": "__t?"
         }
       },
-      "rewritten query": "select [__t?].a, avg([__t?].a) from (select t?.a, t?.b, t?.d from t? t? order by ?, ?, ?) [__t?] (a, b, d) group by [__t?].b"
+      "rewritten query": "select [__t?].a, avg([__t?].a) from (select [dba.t?].a, [dba.t?].b, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?) [__t?] (a, b, d) group by [__t?].b"
     }
   ],
   "Trace Statistics": {
@@ -287,7 +287,7 @@ trace
           "fetch": ?,
           "ioread": ?,
           "SCAN": {
-            "access": "table (t?)",
+            "access": "table (dba.t?)",
             "heap": {
               "time": ?,
               "fetch": ?,
@@ -322,10 +322,10 @@ trace
     {
       "SORT (order by)": {
         "TABLE SCAN": {
-          "table": "t?"
+          "table": "dba.t?"
         }
       },
-      "rewritten query": "(select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?)"
+      "rewritten query": "(select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?)"
     },
     {
       "SORT (group by)": {
@@ -333,7 +333,7 @@ trace
           "table": "__t?"
         }
       },
-      "rewritten query": "select [__t?].a, min([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].b, [__t?].c, [__t?].d"
+      "rewritten query": "select [__t?].a, min([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].b, [__t?].c, [__t?].d"
     }
   ],
   "Trace Statistics": {
@@ -365,7 +365,7 @@ trace
           "fetch": ?,
           "ioread": ?,
           "SCAN": {
-            "access": "table (t?)",
+            "access": "table (dba.t?)",
             "heap": {
               "time": ?,
               "fetch": ?,
@@ -399,16 +399,16 @@ trace
     {
       "SORT (order by)": {
         "TABLE SCAN": {
-          "table": "t?"
+          "table": "dba.t?"
         }
       },
-      "rewritten query": "(select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?)"
+      "rewritten query": "(select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?)"
     },
     {
       "TABLE SCAN": {
         "table": "__t?"
       },
-      "rewritten query": "select [__t?].a, [__t?].b from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) where (inst_num()<= ?:? )"
+      "rewritten query": "select [__t?].a, [__t?].b from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) where (inst_num()<= ?:? )"
     }
   ],
   "Trace Statistics": {
@@ -432,7 +432,7 @@ trace
           "fetch": ?,
           "ioread": ?,
           "SCAN": {
-            "access": "table (t?)",
+            "access": "table (dba.t?)",
             "heap": {
               "time": ?,
               "fetch": ?,

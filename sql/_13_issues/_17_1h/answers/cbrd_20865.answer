@@ -55,19 +55,19 @@ trace
 
 Query Plan:
   SORT (order by)
-    TABLE SCAN (t?)
+    TABLE SCAN (dba.t?)
 
-  rewritten query: (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?)
+  rewritten query: (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?)
 
   SORT (group by)
     TABLE SCAN (__t?)
 
-  rewritten query: select [__t?].a, max([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d
+  rewritten query: select [__t?].a, max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d
 
   SORT (order by)
-    TABLE SCAN (cte_?I?nizhY)
+    TABLE SCAN (dba.cte_?I?nizhY)
 
-  rewritten query: with cte_?I?nizhY(a, [max([__t?].b)]) as (select [__t?].a, max([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d)select cte_?I?nizhY.a, cte_?I?nizhY.[max([__t?].b)] from  cte_?I?nizhY order by ?, ?
+  rewritten query: with cte_?I?nizhY(a, [max([__t?].b)]) as (select [__t?].a, max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d)select [dba.cte_?I?nizhY].a, [dba.cte_?I?nizhY].[max([__t?].b)] from  [dba.cte_?I?nizhY] order by ?, ?
 
 
 Trace Statistics:
@@ -81,7 +81,7 @@ Trace Statistics:
           GROUPBY (time: ?, hash: true, sort: true, page: ?, ioread: ?, rows: ?)
           SUBQUERY (uncorrelated)
             SELECT (time: ?, fetch: ?, ioread: ?)
-              SCAN (table: t?), (heap time: ?, fetch: ?, ioread: ?, readrows: ?, rows: ?)
+              SCAN (table: dba.t?), (heap time: ?, fetch: ?, ioread: ?, readrows: ?, rows: ?)
               ORDERBY (time: ?, sort: true, page: ?, ioread: ?)
      
 
@@ -94,18 +94,18 @@ trace
 
 Query Plan:
   SORT (order by)
-    TABLE SCAN (t?)
+    TABLE SCAN (dba.t?)
 
-  rewritten query: (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?)
+  rewritten query: (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?)
 
   SORT (group by)
     TABLE SCAN (__t?)
 
-  rewritten query: select [__t?].a, max([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d
+  rewritten query: select [__t?].a, max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d
 
-  TABLE SCAN (cte_?I?nizhY)
+  TABLE SCAN (dba.cte_?I?nizhY)
 
-  rewritten query: with cte_?I?nizhY(a, [max([__t?].b)]) as (select [__t?].a, max([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d)select count(*) from  cte_?I?nizhY
+  rewritten query: with cte_?I?nizhY(a, [max([__t?].b)]) as (select [__t?].a, max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d)select count(*) from  [dba.cte_?I?nizhY]
 
 
 Trace Statistics:
@@ -118,7 +118,7 @@ Trace Statistics:
           GROUPBY (time: ?, hash: true, sort: true, page: ?, ioread: ?, rows: ?)
           SUBQUERY (uncorrelated)
             SELECT (time: ?, fetch: ?, ioread: ?)
-              SCAN (table: t?), (heap time: ?, fetch: ?, ioread: ?, readrows: ?, rows: ?)
+              SCAN (table: dba.t?), (heap time: ?, fetch: ?, ioread: ?, readrows: ?, rows: ?)
               ORDERBY (time: ?, sort: true, page: ?, ioread: ?)
      
 
@@ -131,22 +131,22 @@ trace
 
 Query Plan:
   SORT (order by)
-    TABLE SCAN (t?)
+    TABLE SCAN (dba.t?)
 
-  rewritten query: (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?)
+  rewritten query: (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?)
 
   SORT (group by)
     TABLE SCAN (__t?)
 
-  rewritten query: select [__t?].a, max([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d
+  rewritten query: select [__t?].a, max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d
 
-  TABLE SCAN (cte_?I?nizhY)
+  TABLE SCAN (dba.cte_?I?nizhY)
 
-  rewritten query: select count(*) from  cte_?I?nizhY
+  rewritten query: select count(*) from  [dba.cte_?I?nizhY]
 
-  TABLE SCAN (cte_?)
+  TABLE SCAN (dba.cte_?)
 
-  rewritten query: with cte_?I?nizhY(a, [max([__t?].b)]) as (select [__t?].a, max([__t?].b) from (select t?.a, t?.b, t?.c, t?.d from t? t? order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d), cte_?([count(*)]) as (select count(*) from  cte_?I?nizhY)select cte_?.[count(*)] from  cte_?
+  rewritten query: with cte_?I?nizhY(a, [max([__t?].b)]) as (select [__t?].a, max([__t?].b) from (select [dba.t?].a, [dba.t?].b, [dba.t?].c, [dba.t?].d from [dba.t?] [dba.t?] order by ?, ?, ?, ?) [__t?] (a, b, c, d) group by [__t?].d), cte_?([count(*)]) as (select count(*) from  [dba.cte_?I?nizhY])select [dba.cte_?].[count(*)] from  [dba.cte_?]
 
 
 Trace Statistics:
@@ -159,7 +159,7 @@ Trace Statistics:
           GROUPBY (time: ?, hash: true, sort: true, page: ?, ioread: ?, rows: ?)
           SUBQUERY (uncorrelated)
             SELECT (time: ?, fetch: ?, ioread: ?)
-              SCAN (table: t?), (heap time: ?, fetch: ?, ioread: ?, readrows: ?, rows: ?)
+              SCAN (table: dba.t?), (heap time: ?, fetch: ?, ioread: ?, readrows: ?, rows: ?)
               ORDERBY (time: ?, sort: true, page: ?, ioread: ?)
      
 
