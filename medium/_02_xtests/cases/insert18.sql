@@ -13,14 +13,14 @@ select *
  where product.product_code = 3;
            
 rollback work;
-select * from joe.employees_v
+select * from joe.employees_v;
 insert into joe.employees_v(ssn, name, dept_no, salary)
 select ssn, name, dept_no, 1000
   from joe.employee_c;
-select * from joe.employees_v
+select * from joe.employees_v;
 insert into joe.employees_v (ssn, name, dept_no, salary, location)
 values (555555555, 'douglas adams', 5, $50000, 'birmingham');
-select * from joe.employees_v
+select * from joe.employees_v;
 rollback work;
 /**********************************************************************/
 /*                                                                    */

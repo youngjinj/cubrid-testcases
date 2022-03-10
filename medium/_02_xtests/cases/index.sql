@@ -8,50 +8,50 @@ select *
 from joe.product_c a
 where a.product_code = (select b.product_code
 			from joe.product_c b
-			where 4 = b.product_code)
+			where 4 = b.product_code);
 select descr
 from joe.product_c
 where product_code = (select product_code
 		      from joe.product_c
-		      where 4 = product_code)
+		      where 4 = product_code);
 select *
 from joe.product_c a
 where a.product_code = (select b.product_code
 			from joe.product_c b
-			where b.product_code = a.product_code)
+			where b.product_code = a.product_code);
 select *
 from joe.product_c a
 where a.product_code = (select b.product_code
 			from joe.product_c b
-			where a.product_code = b.product_code)
+			where a.product_code = b.product_code);
+select a.descr
+from joe.product_c a, joe.product_c b, joe.product_c c
+where a.product_code = b.product_code
+and b.product_code = c.product_code;
+select a.descr
+from joe.product_c a, joe.product_c b
+where a.product_code = b.product_code
+and b.product_code = 7;
+select a.descr
+from joe.product_c a, joe.product_c b
+where b.product_code = a.product_code
+and b.product_code = 7;
+select a.descr
+from joe.product_c a, joe.product_c b
+where b.product_code = a.product_code
+and a.product_code = 7;
+select a.descr
+from joe.product_c a, joe.product_c b
+where a.product_code = b.product_code
+and a.product_code = 7;
 select a.descr
 from joe.product_c a, joe.product_c b, joe.product_c c
 where a.product_code = b.product_code
 and b.product_code = c.product_code
-select a.descr
-from joe.product_c a, joe.product_c b
-where a.product_code = b.product_code
-and b.product_code = 7
-select a.descr
-from joe.product_c a, joe.product_c b
-where b.product_code = a.product_code
-and b.product_code = 7
-select a.descr
-from joe.product_c a, joe.product_c b
-where b.product_code = a.product_code
-and a.product_code = 7
-select a.descr
-from joe.product_c a, joe.product_c b
-where a.product_code = b.product_code
-and a.product_code = 7
-select a.descr
-from joe.product_c a, joe.product_c b, joe.product_c c
-where a.product_code = b.product_code
-and b.product_code = c.product_code
-and c.product_code = 7
+and c.product_code = 7;
 select a.descr
 from joe.product_c a, joe.product_c b
 where a.product_code = b.product_code + 10
-and b.product_code = 7
+and b.product_code = 7;
 rollback work;
 rollback;
