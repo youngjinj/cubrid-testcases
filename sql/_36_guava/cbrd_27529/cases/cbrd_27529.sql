@@ -1,17 +1,18 @@
 /**
  *  This test case verifies CBRD-27529 : evaluate the R_EQ lookups of a list subquery filter
  *  (IN, NOT IN, = SOME, <> ALL) through a hash set over the list.
- *  The hash set answers from the second lookup of one execution of the subquery on.
+ *  The hash set answers from the first lookup of one execution of the subquery on; a list too large for memory is read.
  *  1. three-valued logic: a list with no NULL, with a NULL, with only NULL, with no row
  *  2. type pairs: INT, BIGINT, NUMERIC of other scales, DOUBLE with -0.0, CHAR and VARCHAR, a case-insensitive
  *     collation, DATE and DATETIME
  *  3. NUMERIC values an expression makes
  *  4. a list that holds the same values many times
  *  5. a value no conversion reads
- *  6. trace: HASH_LOOKUP with its method (memory, hybrid, file) when the hash answers,
- *     none for one outer row, a correlated subquery, and max_hash_list_scan_size 0
- *  7. strings a collation compares equal: a space and a NUL in a byte collation, a character with no weight in an
- *     expanding collation
+ *  6. trace: HASH_LOOKUP with its method (memory, hybrid) when the hash answers, for one outer row as well,
+ *     none for a list too large for memory, a correlated subquery, and max_hash_list_scan_size 0
+ *     NO_HASH_LOOKUP in a subquery: none for the term of that subquery only, in a view as well
+ *  7. strings a collation compares equal: a space and a NUL in a byte collation, the same and an EUC space in
+ *     euckr_bin, binary, utf8_ko_cs, utf8_tr_cs and utf8_gen_ci, a character with no weight in an expanding collation
  *  8. long strings stored compressed, negative NUMERIC values of other scales
  */
 
@@ -138,24 +139,11 @@ select /*+ recompile */ count (*) from ta where ta.ca not in (select tb.ca from 
 show trace;
 
 do @i := @i + 1;
-evaluate concat ('####', lpad (@i, 3), '. trace: a hash file (max_hash_list_scan_size below the positions), from the lookup after the rows a page of the list holds / 64');
+evaluate concat ('####', lpad (@i, 3), '. trace: none for a list too large for memory (max_hash_list_scan_size below the positions): the lookups read the list');
 
 set system parameters 'max_hash_list_scan_size=100';
--- a few rows a page of the list: from the 2nd lookup
 select /*+ recompile */ count (*) from ta where ta.ca not in (select tb.ca from tb where tb.k = 'null');
 show trace;
--- 1,000 INT rows on a page of the list: from the 16th lookup, not for 5 rows but for 40
-create table tl (ca int);
-insert into tl select rownum + 1000 from db_class a, db_class b, db_class c limit 1000;
-create table tf5 (ca int);
-insert into tf5 select rownum mod 7 from db_class a limit 5;
-create table tf40 (ca int);
-insert into tf40 select rownum mod 7 from db_class a, db_class b limit 40;
-select /*+ recompile */ count (*) from tf5 where tf5.ca not in (select tl.ca from tl);
-show trace;
-select /*+ recompile */ count (*) from tf40 where tf40.ca not in (select tl.ca from tl);
-show trace;
-drop table tl, tf5, tf40;
 select id from ta where ta.cg not in (select tb.cgb from tb where tb.k = 'plain') order by 1;
 select id from ta where ta.cc * 1.00 not in (select tb.cc + 0.000 from tb where tb.k = 'plain') order by 1;
 
@@ -166,6 +154,31 @@ set system parameters 'max_hash_list_scan_size=0';
 select /*+ recompile */ count (*) from ta where ta.ca not in (select tb.ca from tb where tb.k = 'null');
 show trace;
 set system parameters 'max_hash_list_scan_size=default';
+
+do @i := @i + 1;
+evaluate concat ('####', lpad (@i, 3), '. trace: NO_HASH_LOOKUP in a subquery turns the hash off for the term of that subquery');
+
+select /*+ recompile */ count (*) from ta
+where ta.ca not in (select /*+ NO_HASH_LOOKUP */ tb.ca from tb where tb.k = 'plain');
+show trace;
+-- the other term's subquery has no hint: its lookups use the hash
+select /*+ recompile */ count (*) from ta
+where ta.ca not in (select /*+ NO_HASH_LOOKUP */ tb.ca from tb where tb.k = 'plain')
+  and ta.cb not in (select tb.cb from tb where tb.k = 'plain');
+show trace;
+-- in the outer query the hint does not reach the subquery
+select /*+ recompile NO_HASH_LOOKUP */ count (*) from ta where ta.ca not in (select tb.ca from tb where tb.k = 'plain');
+show trace;
+-- IN, left a filter by OR rather than made a join
+select /*+ recompile */ count (*) from ta
+where ta.ca in (select /*+ NO_HASH_LOOKUP */ tb.ca from tb where tb.k = 'plain') or ta.id < 0;
+show trace;
+-- a view keeps the hint
+create view v27529 as select ta.id from ta where ta.ca not in (select /*+ NO_HASH_LOOKUP */ tb.ca from tb where tb.k = 'plain');
+show create view v27529;
+select /*+ recompile */ count (*) from v27529;
+show trace;
+drop view v27529;
 
 set trace off;
 
@@ -180,6 +193,64 @@ select id from tc where tc.ca not in (select td.ca from td) order by 1;
 select id from tc where tc.ca <> all (select td.ca from td) order by 1;
 select id from tc where tc.cb not in (select td.cb from td) order by 1;
 drop table tc, td;
+
+do @i := @i + 1;
+evaluate concat ('####', lpad (@i, 3), '. strings the other built-in collations and a locale''s collation compare equal: a space, a NUL and an EUC space, trailing ones');
+
+create table tv (id int, s varchar(10));
+create table tw (s varchar(10));
+insert into tv values (1, 'x'), (2, 'a b'), (3, 'a' || chr (0) || 'b'), (4, 'c'), (5, 'c '), (6, 'c' || chr (0)),
+                      (7, '가 나'), (8, 'q');
+insert into tw values ('a' || chr (41377 using euckr) || 'b'), ('c' || chr (41377 using euckr)),
+                      ('가' || chr (0) || '나'), ('c' || chr (0) || chr (0)), ('Q');
+set trace on;
+
+create table tc (id int, ca varchar(10) collate euckr_bin, cb char(10) collate euckr_bin);
+create table td (ca varchar(10) collate euckr_bin, cb char(10) collate euckr_bin);
+insert into tc select id, s, s from tv;
+insert into td select s, s from tw;
+select /*+ recompile */ id from tc where tc.ca not in (select td.ca from td) order by 1;
+show trace;
+select id from tc where tc.cb not in (select td.cb from td) order by 1;
+drop table tc, td;
+
+create table tc (id int, ca varchar(10) collate binary, cb char(10) collate binary);
+create table td (ca varchar(10) collate binary, cb char(10) collate binary);
+insert into tc select id, s, s from tv;
+insert into td select s, s from tw;
+select /*+ recompile */ id from tc where tc.ca not in (select td.ca from td) order by 1;
+show trace;
+select id from tc where tc.cb not in (select td.cb from td) order by 1;
+drop table tc, td;
+
+create table tc (id int, ca varchar(10) collate utf8_ko_cs, cb char(10) collate utf8_ko_cs);
+create table td (ca varchar(10) collate utf8_ko_cs, cb char(10) collate utf8_ko_cs);
+insert into tc select id, s, s from tv;
+insert into td select s, s from tw;
+select /*+ recompile */ id from tc where tc.ca not in (select td.ca from td) order by 1;
+show trace;
+select id from tc where tc.cb not in (select td.cb from td) order by 1;
+drop table tc, td;
+
+create table tc (id int, ca varchar(10) collate utf8_tr_cs, cb char(10) collate utf8_tr_cs);
+create table td (ca varchar(10) collate utf8_tr_cs, cb char(10) collate utf8_tr_cs);
+insert into tc select id, s, s from tv;
+insert into td select s, s from tw;
+select /*+ recompile */ id from tc where tc.ca not in (select td.ca from td) order by 1;
+show trace;
+select id from tc where tc.cb not in (select td.cb from td) order by 1;
+drop table tc, td;
+
+create table tc (id int, ca varchar(10) collate utf8_gen_ci, cb char(10) collate utf8_gen_ci);
+create table td (ca varchar(10) collate utf8_gen_ci, cb char(10) collate utf8_gen_ci);
+insert into tc select id, s, s from tv;
+insert into td select s, s from tw;
+select /*+ recompile */ id from tc where tc.ca not in (select td.ca from td) order by 1;
+show trace;
+select id from tc where tc.cb not in (select td.cb from td) order by 1;
+drop table tc, td;
+set trace off;
+drop table tv, tw;
 
 do @i := @i + 1;
 evaluate concat ('####', lpad (@i, 3), '. a character an expanding collation gives no weight (U+00AD)');
